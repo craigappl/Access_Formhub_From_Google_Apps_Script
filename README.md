@@ -1,7 +1,5 @@
-Access_Formhub_From_Google_Apps_Script
+Access Formhub From Google Apps
 ======================================
-
-Formhub interaction with Google Apps Script
 
 This repository contains code that allows organizations to pull information from Formhub (formhub.org) into Google Apps using Google Apps Script. 
 
