@@ -1,3 +1,6 @@
+//See ReadMe file for more information which can be found at 
+//https://github.com/craigappl/Access_Formhub_From_Google_Apps_Script/edit/master/Working_Examples/Update_Spreadsheet_README
+
 /* Declare global varibles that are used multiple times*/
 var app = UiApp.createApplication();//This creates the application which is used for setup
 var current_sheet = SpreadsheetApp.getActiveSpreadsheet(); //This is the current spreadsheet
