@@ -1,0 +1,3 @@
+This folder contains examples of basic and token authentication to formhub from Google Apps Script.
+
+I don't have a working example of Oauth2 because the Oauth function provided by Google Apps Script is based on Oauth1.
