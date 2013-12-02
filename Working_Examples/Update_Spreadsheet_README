@@ -1,0 +1,30 @@
+The Update_Spreadsheet working example uses token authentication to access the formhub API v1, allowing users to update all data from within Google Spreadsheets. The script can be run through the added menu item. Presently, the script should be added to 'gdocs' export from formhub. 
+
+Known Issues:
+1) This script assumes all headers are in the first row. This script does not work on blank worksheets because it compares the headers from the sheet to the information received from formhub
+2) At the moment, the entire sheet is replaced. A Future improvement would be to run through the '_id' column of the sheet, compare it to the formhub server and only download the forms that are missing. 
+3) Blank fields from the formhub server are tagged as 'Undefined' 
+
+Installation:
+1) Export your form using the 'gdocs' button
+2) Navigate to your google drive account and open the new spreadsheet
+3) Click 'Tools>Script Editor...'
+4) Paste this script into the editor and close the script editor
+5) Click 'Tools>Script Manager' in the spreadsheet
+6) Run the function called 'OnOpen'
+7) Complete the authorization and run the function again
+8) A new menu item will appear called 'Update from formhub'
+---The Script is Installed---
+
+Setup:
+1) In a separate browser window, navigate to https://formhub.org/YOURUSERNAME/api-token
+2) Highlight and copy the token using Ctrl-C
+3) Click 'Update from formhub>Setup'
+4) Paste your token code and click Submit
+5) Click 'OK' to the popup
+6) Select your formhub form which updates this sheet
+7) Click 'Submit' and 'OK' to the popup
+---The Setup is Complete---
+
+Running the Script:
+1) Click Update from formhub>Import Data' to update the entire spreadsheet
