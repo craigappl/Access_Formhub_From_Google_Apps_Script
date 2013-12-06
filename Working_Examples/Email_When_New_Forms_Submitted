@@ -1,0 +1,183 @@
+/*
+Last Updated 6 Dec 2013
+
+formhub API Documentation: https://formhub.org/api/v1/?format=api
+
+Description: 
+This script fetches information from the formhub server (API v1) using token authentication and sends an email (1 per form)
+
+Script Setup:
+View ReadMe file in Working_Examples folder (https://github.com/craigappl/Access_Formhub_From_Google_Apps_Script/tree/master/Working_Examples)
+*/
+
+//---USER PROPERTIES---//
+//First set this variable from your formhub developer token and the email addresses 
+//Source: https://formhub.org/YOUR_USERNAME/api-token
+var token = 'XXXXX';
+var email_recipient = 'XXXXX';//email address(es) of the recipient(s) - for multiple, separate by comma
+
+//---SCRIPT---// 
+var app = UiApp.createApplication();//This creates the application which is used for setup
+var num_new_submissions = 0;//This is used to track the number of new submissions per form to send a smart message
+
+function doGet() {
+//this is the main function called by the web app
+
+  //Check if the script has been run before by seeing if the script storage has been set for formURL
+  //If it hasn't been run, the setup will commence. If it has, the forms will be checked
+  if(ScriptProperties.getProperty('form0name')== null){
+    getformURLs();
+    //Ask the user which forms they would like email notification
+    askUser();  
+  }
+  else{
+    //Load the script properties into an array to see how many forms there are
+    var num_forms = parseInt(ScriptProperties.getProperty('num_forms'));//we use parseInt to make sure an integer is returned, not a string
+    var formhub_username = ScriptProperties.getProperty('formhub_username');
+    
+    //loop through all of the forms and see if the send_email is true
+    for(i=0; i<num_forms;i++){
+      if(ScriptProperties.getProperty('form'+i+'send_email') == 'true'){
+      
+        //Get the formURL and num_responses from ScriptProperties to be passed to NewDataCheck()
+        var formURL = ScriptProperties.getProperty('form'+i+'URL');
+        var form_num_responses = parseInt(ScriptProperties.getProperty('form'+i+'num_responses'));
+        var email_subject = '';
+        //Check to see if there's new data for this form and send a generic email
+        if(NewDataCheck(formURL,form_num_responses,i)){
+          //Set the variables of the subject and body based on the form information
+          if(num_new_submissions == 1){
+          email_subject = ScriptProperties.getProperty('form'+i+'name')+': '+num_new_submissions+' New form has been submitted';//Subject of the email notification - has to be a string
+          }else{
+          email_subject = ScriptProperties.getProperty('form'+i+'name')+': '+num_new_submissions+' New forms have been submitted';//Subject of the email notification - has to be a string
+          }
+          var email_body = 'Please login to the formhub server and download the latest information. https://formhub.org/'+formhub_username+'/forms/'+ScriptProperties.getProperty('form'+i+'name');//Body of the email notification
+        
+          MailApp.sendEmail(email_recipient, email_subject, email_body)
+        }
+      }
+    }
+  }
+  return app;
+}
+
+function NewDataCheck(formURL,form_num_responses,i){
+//This function queries the passed form and pulls in the latest record
+
+  //Declare a return value from the form
+  var return_val;
+
+  //Fetch the form data and write it to a JSON object
+  var fetch_form = UrlFetchApp.fetch(formURL,getUrlFetchOptions()).getContentText();  // provides a TEXT list of form names and URLs
+  var form_as_json = JSON.parse(fetch_form); //parse to JSON so we can work with the data in an array
+  var latest_num_submissions = form_as_json['num_of_submissions']
+  
+  //Compare the length of the latest_data_json against the integer stored in the ScriptProperties  
+  if(form_num_responses == latest_num_submissions){
+    return_val = false; //if they match, return false
+  }
+  else{
+    return_val = true; //if they don't match, return true
+    num_new_submissions = latest_num_submissions - form_num_responses;
+    ScriptProperties.setProperty('form'+i+'num_responses',latest_num_submissions); //also switch the old length
+  }
+  return return_val;
+}
+
+function askUser() {
+  //Load the script properties into an array to see how many forms there are
+  var num_forms = parseInt(ScriptProperties.getProperty('num_forms')) + 1;//we use parseInt to make sure an integer is returned, not a string
+  
+  //Create a FlexTable to hold values
+  var table = app.createFlexTable().setId('table').setBorderWidth(1).setCellPadding(1)
+  var submitbutton = app.createButton('Submit');
+  
+  //Set Headers of the table
+  table.setWidget(0, 0, app.createLabel('Form Name'));
+  table.setWidget(0, 1, app.createLabel('Email Notification'));
+  
+  //Create a server handler that handles the checkbox when it's changed
+  var check = app.createServerHandler('check');
+  check.addCallbackElement(table);
+  
+  for(r=0;r<num_forms-1; r++){
+    var formname= 'form'+r+'name';//Define the formname to pull from getProperty
+    var send_email = 'form'+r+'send_email';//Define the send_email to pull from getProperty
+    var email_val = ScriptProperties.getProperty(send_email);
+    if(email_val == 'true') {
+      email_val = Boolean(true);
+    }else{
+      email_val = Boolean(false);
+    }
+
+    //Set the labels and checkboxes in the grid
+    table.setWidget(r+1, 0, app.createLabel(ScriptProperties.getProperty(formname)));
+    table.setWidget(r+1,1,app.createCheckBox().addValueChangeHandler(check).setName('check'+r).setValue(email_val));// create the checkBow once every row if condition is true and give it a name
+  }
+
+  // Create a vertical panel and link
+  var panel = app.createVerticalPanel();
+  var returnlink = app.createAnchor('Submit', ScriptApp.getService().getUrl());
+
+  // ...and add the table to the panel
+  panel.add(table);
+  panel.add(returnlink);
+  app.add(panel);
+  return app;
+}
+
+function check(e) {
+ //This function takes the user's input from the form and writes email preferences to setProperty
+  var num_forms = parseInt(ScriptProperties.getProperty('num_forms'));//we use parseInt to make sure an integer is returned, not a string
+  
+  for(var n=0; n < num_forms;++n){
+    var formname= 'form'+n+'name';//Define the formname to pull from getProperty
+    var email_property_name = 'form'+n+'send_email';//Set the email property name
+    //Set the values of the checked box in the ScriptProperties
+    ScriptProperties.setProperty(email_property_name, e.parameter['check'+n]);
+  } 
+}
+
+function getformURLs(){
+  //First, we have to translate the 
+  var getDataURL = 'https://formhub.org/api/v1/forms'; //The formhub api v1 data call allows access to the submitted form information
+  var list_of_forms = UrlFetchApp.fetch(getDataURL,getUrlFetchOptions()).getContentText();  //provides a TEXT list of form names and URLs
+  var json_array = JSON.parse(list_of_forms); //parse to JSON so we can work with the data in an array
+  
+  //Get the username from the json_array URL
+  var formhub_users = JSON.parse(UrlFetchApp.fetch('https://formhub.org/api/v1/users',getUrlFetchOptions()).getContentText());
+  var formhub_username = formhub_users[0]["username"];
+  
+  //Assign the script properties
+  
+  for (var j=0; j<json_array.length; j++)
+  { 
+    ScriptProperties.setProperty('form'+j+'name',json_array[j]["id_string"]);//This value saves the name of the form
+    ScriptProperties.setProperty('form'+j+'URL', json_array[j]["url"]);//This value saves the URL of the form
+    ScriptProperties.setProperty('form'+j+'send_email', 'false');//This value will determine if email notification is sent for this form
+    ScriptProperties.setProperty('form'+j+'num_responses', 0)//This tracks the number of form responses per form allowing us to know if there has been an update 
+  }
+  //Save the number of forms
+  ScriptProperties.setProperty('num_forms', j);
+  ScriptProperties.setProperty('formhub_username', formhub_username);
+  //Logger.log(ScriptProperties.getProperty('num_forms'));
+}
+
+function getUrlFetchOptions() {
+//This function returns the Authorization headers with token information to formhub
+  return {
+            "headers" : {
+                         "Authorization" : "Token " + token,
+                        }
+         };
+}
+function getScriptProperties(){
+//ForDebugging Purposes
+// This script can be run at any time to get the current ScriptProperties
+Logger.log(ScriptProperties.getProperties());
+}
+function StartOver(){
+//LOOK HERE TO RERUN SETUP
+  //To run setup again properties, uncomment the following line and click Run>doGet in the file menu there's no need to republish
+  ScriptProperties.deleteAllProperties();
+}
