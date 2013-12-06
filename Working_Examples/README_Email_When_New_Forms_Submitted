@@ -4,3 +4,48 @@ Email_When_New_Forms_Submitted
 Location:
 https://github.com/craigappl/Access_Formhub_From_Google_Apps_Script/blob/master/Working_Examples/Email_When_New_Forms_Submitted
 
+This script queries the formhub database formhub.org for new form submissions and sends an email notifying that new forms have been submitted.
+
+Installation Steps:
+1) Open your Google Drive (drive.google.com) and login
+2) Click the red create button on the left side
+3) Click 'Script' in the menu that pops up
+3a) If there is no script, you have to install it by clicking 'Connect more Apps' in the bottom of that menu. Search in the popup box for 'script' and click 'Google Apps Script' - Now, you should have the ability to create a script
+4) Click (Create Script for) 'Blank Project' on the left column of the popup box.
+5) Delete all code that shows up in the window (it contains the words function myfunction(){})
+6) Copy and paste all code from the github script into this Google Script window
+7) Save your project by clicking File>Save and give it a meaningful name
+
+
+Setup:
+1) In a new window open https://formhub.org and login to your account
+2) Click the dropdown triangle next to your username in the upper right corner of the formhub page
+3) Click API Token in that dropdown window
+4) Double Click the Key to highlight it, right click and copy (This key needs to be entered into the Google Apps Script)
+5) Return to the script you created
+6) Look at the top of the script for the text //---USER PROPERTIES---// 
+7) Highlight the 5 Xs in the line that says var token = 'XXXXX';
+8) Right click and paste your formhub key into this area
+9) Just below that line, you will see var email_address = 'XXXXX';
+10) Delete the 5 Xs and type the recipient's email address here. You can type multiple recipients separated by a comma
+11) Save the script by clicking File>Save
+12) Now, we need to tell Google Apps Script how often to run the script - Click Resources>Current Project's Triggers
+13) In the popup click the text that says 'No triggers setup. Click here to add a new one'
+14) Here's where you need to decide how often to run the script depending on your business processes
+14a) Always run doGet in the first dropdown menu
+14b) Time-driven should be selected in the second dropdown menu
+14c) The third dropdown menu needs to be changed to 'Minutes timer' if you want to check formhub every few minutes or you can leave it at the 'Hour timer'
+14d) The last dropdown allows you to select the time interval
+14e) Click the 'notifications' text to receive email notification if the script fails (I do this immediately so I can try to fix the problem)
+15) Click Save in the triggers popup box
+16) A box will popup saying 'Authorization required' if this is the first time you are running the script Click 'Continue' and authorize the app by clicking 'Accept' in the next popup box
+17) Now, you're ready to tell the App which forms you would like email notification
+
+
+Running the App for the first time:
+1) Click Publish>Deploy as web app...
+2) Type 'First Deployment' in the 'Project version:' box
+3) Click the 'Save New Version' button
+4) Click the Deploy button on the bottom
+5) Copy the web App URL and paste it into a new window
+Not done with instructions yet. To be continued...
