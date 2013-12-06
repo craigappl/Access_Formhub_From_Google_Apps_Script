@@ -1,10 +1,20 @@
+WARNING:
+This script queries the formhub server as often as you like. DO NOT RUN THIS REPEATEDLY, but at an appropriate time interval depending on your workflow. 
+
 This is the README file for the following script:
 Email_When_New_Forms_Submitted
 
 Location:
 https://github.com/craigappl/Access_Formhub_From_Google_Apps_Script/blob/master/Working_Examples/Email_When_New_Forms_Submitted
 
-This script queries the formhub database formhub.org for new form submissions and sends an email notifying that new forms have been submitted.
+Description:
+This script queries the formhub database formhub.org for new form submissions and sends an email notifying that new forms have been submitted. Once notified, the user goes to the formhub server and downloads the information.
+
+A note on using the API vs. the REST Service
+The REST service is available within the form settings and has the potential to push form submissions to a receiving service using the POST command. I tested this through Google Apps Script and found that it redirects the POST command to a temporary URL for security purposes. If we can get this fixed in the future, that is a MUCH BETTER way of doing this. 
+
+--- You only have to run installation and setup once --- 
+--- Instructions Below ---
 
 Installation Steps:
 1) Open your Google Drive (drive.google.com) and login
@@ -48,4 +58,16 @@ Running the App for the first time:
 3) Click the 'Save New Version' button
 4) Click the Deploy button on the bottom
 5) Copy the web App URL and paste it into a new window
-Not done with instructions yet. To be continued...
+6) The script will get a list of all of your forms on formhub
+7) If you want email notification to update a form check the box next to the form name and click the 'submit' text
+8) The script will open in a new window and run. You should receive an email that tells you the number of current form submissions.
+
+
+Troubleshooting:
+1Q) Error Message "Request failed for https://formhub.org/api/v1/forms returned code 401."
+1A)This means there's an issue with your authorization token. Make sure you entered the formhub token correctly from Setup steps 1-7
+
+2Q) I made a new form and want to check the box for email notification.
+2A) Click Run>StartOver to clear the current settings and start over again. You do not need to reinstall the script, you just need to clear the current properties and set them again.
+
+
