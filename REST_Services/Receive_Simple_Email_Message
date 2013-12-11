@@ -1,0 +1,31 @@
+/* This script recieves a submission from the formhub server within Google Apps Script and sends an email notifying the user that new data has been submitted 
+Note: When you Publish this as a web app, select 'Anyone, even anonymous' in the dropdown menu that says 'Who has access to the app:'
+Source can be found in the following site: https://github.com/craigappl/Access_Formhub_From_Google_Apps_Script/REST_Services
+*/
+
+
+function doPost(e){
+//This function receives a post from the formhub server, gets the postData (content) as a string and sends an email with the information attached
+
+//First, we need to get the contents of the POST message from formhub
+var received_postData = e.postData.getDataAsString(); //Gets the postData as string
+var as_JSON = JSON.parse(received_postData);//Converts the received data to a JSON object that allows us to read the object
+var formname = as_JSON['_xform_id_string']; //Gets the formname from the JSON object
+var URL = as_JSON['_userform_id']; //Gets the username and formname from the JSON object
+
+//Set the formhub.org URL for easy link in the body of the email
+//Replace the underscore '_' with the '/forms/' to build the URL
+URL = URL.replace('_','/forms/');
+//Add https://formhub.org to the front of the URL
+URL = 'https://formhub.org/'+URL;
+
+//Send an email with the attachment. You can edit the subject and body of the message here
+//For a full list of parameters visit the following source 'https://developers.google.com/apps-script/reference/mail/mail-app#sendEmail(Object)'
+MailApp.sendEmail({
+  to: 'XXXXXXXXXX',
+  subject: formname+' - A new form has been submitted',
+  body: 'A new form has been submitted for the form named ' + formname + '. Please visit '+URL+' to download the latest submission.',
+  noReply: true
+  });
+
+}
