@@ -1,0 +1,19 @@
+This README File describes how to push live updates to an already exported Google Spreadsheet.
+
+Export Form from Formhub to Google Spreadsheets
+  1) In your formhub account, click the form you wish to export
+  2) Click the 'gdocs' button under 'Form Data' in your formhub form
+  3) Wait for the export to finish
+  4) Click the filename to link to your form. This is the spreadsheet that we will update
+  DO NOT CHANGE ANYTHING IN ROW 1...These are the headers that will be matched when the data arrives from formhub
+
+Setup the Google Apps Script to receive the data
+  1)In your Google Drive, click 'Create' and 'Script'
+  2) Click 'Close' on the popup box
+  3) Delete everything that is in the Code.gs screen i.e.function myFunction(){}
+  4) Click the Untitled project and name the script appropriately. Something like 'Update_formhub_spreadsheet'
+  5) Copy and Paste all code from the Github file into the Google Apps Script
+  -------------------Insert Script Setup here
+  
+  
+  
